@@ -1,0 +1,37 @@
+{
+  "name": "crossroad",
+  "version": "0.0.0",
+  "description": "Semantically-versionned service discovery",
+  "main": "index.js",
+  "dependencies": {
+    "chai": "^1.10.0",
+    "istanbul": "^0.3.5",
+    "coveralls": "^2.11.2",
+    "supertest": "^0.15.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1"
+  },
+  "scripts": {
+    "test": "istanbul cover --print detail _mocha -- -R spec test",
+    "coveralls": "cat coverage/lcov.info | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Floby/crossroad.git"
+  },
+  "keywords": [
+    "service",
+    "discovery",
+    "gossip",
+    "semver",
+    "api",
+    "http"
+  ],
+  "author": "Florent Jaby <florent.jaby@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Floby/crossroad/issues"
+  },
+  "homepage": "https://github.com/Floby/crossroad"
+}
