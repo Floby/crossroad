@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // vi: ft=javascript
 
-var port = Number(process.argv[3]);
+var port = Number(process.argv[3]) || 5555;
 var Crossroad = require('../index');
 var crossroadd = new Crossroad({ port: port })
-crossroadd.start();
+crossroadd.start(function () {
+  console.log('instance started on port', crossroadd.port)
+});
