@@ -44,6 +44,7 @@ function findService (registry) {
     var type = req.param('service_type');
     var spec = req.param('version_spec');
     if(!registry[type]) return next();
+    if(!semver.satisfies(registry[type].version, spec)) return next();
     res.json(registry[type]);
   };
 }

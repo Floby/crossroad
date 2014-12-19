@@ -98,7 +98,18 @@ describe('a running instance', function () {
                    .end(done)
       });
 
-      describe('with a matching version query', function () {
+      describe('with a non matching version range', function () {
+        it('returns a 200 with the service description', function (done) {
+          supertest()
+            .get('/services/my-service/^0.1.6')
+            .expect(404)
+            .expect('Content-Type', /application\/json/)
+            .expect({ status: 'not_found', reason: 'No service matches my-service@^0.1.6' })
+            .end(done)
+        });
+      });
+
+      describe('with a matching version range', function () {
         it('returns a 200 with the service description', function (done) {
           supertest()
             .get('/services/my-service/~1.0.0')
