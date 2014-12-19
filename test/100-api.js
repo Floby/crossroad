@@ -33,4 +33,18 @@ describe('a running instance', function () {
         .end(done)
     });
   })
+
+  describe('POST /services', function () {
+    describe('when posting a JSON service manifest', function () {
+      it('replies 400 when not giving a type', function (done) {
+        supertest()
+          .post('/services')
+          .set('Content-Type', 'application/json')
+          .send({})
+          .expect(400)
+          .expect(/service type is mandatory/i)
+          .end(done)
+      });
+    });
+  });
 })
