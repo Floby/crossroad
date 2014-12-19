@@ -11,6 +11,7 @@ function Crossroad (options) {
   if(!(this instanceof Crossroad)) return new Crossroad(options);
 
   var self = this;
+  self.registry = {};
   options = options || {};
   this.port = options.port || 0;
   this.server = http.createServer(createApp(this))
@@ -18,7 +19,8 @@ function Crossroad (options) {
 
 var newServiceTemplate = {
   type: String,
-  version: paperwork.all(String, semver.valid)
+  version: paperwork.all(String, semver.valid),
+  location: Object
 };
 
 function createApp (server) {
@@ -28,20 +30,30 @@ function createApp (server) {
   app.post('/services', 
       bodyParser.json(),
       paperwork.accept(newServiceTemplate),
-      function (req, res) {
-        res.status(201).end();
-      });
+      postService(server.registry))
   
-  app.get('/services/:service_type/:version_spec', function (req, res) {
-    res.status(404).json({
-      status: 'not_found',
-      reason: util.format('No service matches %s@%s', 
-        req.param('service_type'), 
-        req.param('version_spec'))
-    })
-  })
+  app.get('/services/:service_type/:version_spec',
+      findService(server.registry),
+      serviceNoMatch)
 
   return app;
+}
+
+function findService (registry) {
+  return function (req, res, next) {
+    var type = req.param('service_type');
+    var spec = req.param('version_spec');
+    if(!registry[type]) return next();
+    res.json(registry[type]);
+  };
+}
+
+function postService (registry) {
+  return function (req, res, next) {
+    var service = req.body;
+    registry[service.type] = service;
+    res.status(201).end()
+  }
 }
 
 function sendInfo (server) {
@@ -53,6 +65,15 @@ function sendInfo (server) {
       }
     })
   }
+}
+
+function serviceNoMatch (req, res) {
+  res.status(404).json({
+    status: 'not_found',
+    reason: util.format('No service matches %s@%s', 
+      req.param('service_type'), 
+      req.param('version_spec'))
+  })
 }
 
 var m = Crossroad.prototype;

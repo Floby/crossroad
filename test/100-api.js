@@ -68,14 +68,6 @@ describe('a running instance', function () {
       })
 
       describe('with a valid service description', function () {
-        var validDescriptor = {
-          type: 'my-service',
-          version: '1.0.3',
-          location: {
-            hostname: '127.0.0.1',
-            port: 877
-          }
-        }
         it('returns a 201', function (done) {
           postService(validDescriptor)
           .expect(201)
@@ -96,5 +88,42 @@ describe('a running instance', function () {
           .end(done)
       });
     });
+
+    describe('when a service is registered', function () {
+      beforeEach(function (done) {
+        supertest().post('/services')
+                   .set('Content-Type', 'application/json')
+                   .send(validDescriptor)
+                   .expect(201)
+                   .end(done)
+      });
+
+      describe('with a matching version query', function () {
+        it('returns a 200 with the service description', function (done) {
+          supertest()
+            .get('/services/my-service/~1.0.0')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+            .expect({
+              type: 'my-service',
+              version: '1.0.3',
+              location: {
+                hostname: '127.0.0.1',
+                port: 877
+              }
+            })
+            .end(done)
+        });
+      });
+    })
   });
 })
+
+var validDescriptor = {
+  type: 'my-service',
+  version: '1.0.3',
+  location: {
+    hostname: '127.0.0.1',
+    port: 877
+  }
+}
