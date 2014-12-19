@@ -1,3 +1,4 @@
+var util = require('util');
 var semver = require('semver');
 var bodyParser = require('body-parser');
 var paperwork = require('paperwork');
@@ -30,6 +31,15 @@ function createApp (server) {
       function (req, res) {
         res.status(201).end();
       });
+  
+  app.get('/services/:service_type/:version_spec', function (req, res) {
+    res.status(404).json({
+      status: 'not_found',
+      reason: util.format('No service matches %s@%s', 
+        req.param('service_type'), 
+        req.param('version_spec'))
+    })
+  })
 
   return app;
 }

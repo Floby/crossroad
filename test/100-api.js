@@ -84,4 +84,17 @@ describe('a running instance', function () {
       })
     });
   });
+
+  describe('GET /services/:type/:version-spec', function () {
+    describe('when no service is registered', function () {
+      it('returns a 404', function (done) {
+        supertest()
+          .get('/services/my-service/^1.1.0')
+          .set('Accept', 'application/json')
+          .expect(404)
+          .expect({ status: 'not_found', reason: 'No service matches my-service@^1.1.0' })
+          .end(done)
+      });
+    });
+  });
 })
