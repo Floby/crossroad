@@ -35,32 +35,29 @@ describe('a running instance', function () {
   })
 
   describe('POST /services', function () {
+    function postService (service) {
+      return supertest()
+        .post('/services')
+        .set('Content-Type', 'application/json')
+        .send(service)
+    }
     describe('when posting a JSON service manifest', function () {
       it('replies 400 when not giving a type', function (done) {
-        supertest()
-          .post('/services')
-          .set('Content-Type', 'application/json')
-          .send({})
+        postService({})
           .expect(400)
           .expect(/body.type: missing/i)
           .end(done)
       });
 
       it('replies 400 when not giving a version', function (done) {
-        supertest()
-          .post('/services')
-          .set('Content-Type', 'application/json')
-          .send({type: 'my-service-type'})
+        postService({type: 'my-service-type'})
           .expect(400)
           .expect(/body.version: missing/i)
           .end(done)
       });
 
       it('replies 400 when giving an invalid version format', function (done) {
-        supertest()
-          .post('/services')
-          .set('Content-Type', 'application/json')
-          .send({type: 'my-service-type', version: 'bidule chose'})
+        postService({type: 'my-service-type', version: 'bidule chose'})
           .expect(400)
           .expect(/body.version: failed/i)
           .end(done)
