@@ -66,6 +66,22 @@ describe('a running instance', function () {
             .end(done)
         });
       })
+
+      describe('with a valid service description', function () {
+        var validDescriptor = {
+          type: 'my-service',
+          version: '1.0.3',
+          location: {
+            hostname: '127.0.0.1',
+            port: 877
+          }
+        }
+        it('returns a 201', function (done) {
+          postService(validDescriptor)
+          .expect(201)
+          .end(done)
+        });
+      })
     });
   });
 })

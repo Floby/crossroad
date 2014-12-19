@@ -26,7 +26,10 @@ function createApp (server) {
   app.get('/info', sendInfo(server));
   app.post('/services', 
       bodyParser.json(),
-      paperwork.accept(newServiceTemplate));
+      paperwork.accept(newServiceTemplate),
+      function (req, res) {
+        res.status(201).end();
+      });
 
   return app;
 }
