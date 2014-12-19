@@ -99,7 +99,7 @@ describe('a running instance', function () {
       });
 
       describe('with a non matching version range', function () {
-        it('returns a 200 with the service description', function (done) {
+        it('returns a 404', function (done) {
           supertest()
             .get('/services/my-service/^0.1.6')
             .expect(404)
