@@ -42,7 +42,27 @@ describe('a running instance', function () {
           .set('Content-Type', 'application/json')
           .send({})
           .expect(400)
-          .expect(/service type is mandatory/i)
+          .expect(/body.type: missing/i)
+          .end(done)
+      });
+
+      it('replies 400 when not giving a version', function (done) {
+        supertest()
+          .post('/services')
+          .set('Content-Type', 'application/json')
+          .send({type: 'my-service-type'})
+          .expect(400)
+          .expect(/body.version: missing/i)
+          .end(done)
+      });
+
+      it('replies 400 when giving an invalid version format', function (done) {
+        supertest()
+          .post('/services')
+          .set('Content-Type', 'application/json')
+          .send({type: 'my-service-type', version: 'bidule chose'})
+          .expect(400)
+          .expect(/body.version: failed/i)
           .end(done)
       });
     });

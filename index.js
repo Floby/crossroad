@@ -1,4 +1,6 @@
+var semver = require('semver');
 var bodyParser = require('body-parser');
+var paperwork = require('paperwork');
 var express = require('express');
 var http = require('http');
 
@@ -13,16 +15,19 @@ function Crossroad (options) {
   this.server = http.createServer(createApp(this))
 }
 
+var newServiceTemplate = {
+  type: String,
+  version: paperwork.all(String, semver.valid)
+};
+
 function createApp (server) {
   var app = express();
   app.get('/', sendInfo(server));
   app.get('/info', sendInfo(server));
-  app.post('/services', bodyParser.json(), function (req, res) {
-    res.status(400).json({
-      error: 'bad_request',
-      reason: 'service type is mandatory'
-    });
-  });
+  app.post('/services', 
+      bodyParser.json(),
+      paperwork.accept(newServiceTemplate));
+
   return app;
 }
 
