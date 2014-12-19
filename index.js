@@ -7,7 +7,7 @@ function Crossroad (options) {
 
   var self = this;
   options = options || {};
-  this.port = options.port || 5555;
+  this.port = options.port || 0;
 
   this.server = http.createServer(function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -25,7 +25,11 @@ function Crossroad (options) {
 var m = Crossroad.prototype;
 
 m.start = function start (callback) {
-  this.server.listen(this.port, callback);
+  var self = this;
+  this.server.listen(this.port, function (err) {
+    self.port = self.server.address().port;
+    callback(err);
+  });
 }
 
 m.stop = function stop(callback) {
