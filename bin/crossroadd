@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+// vi: ft=javascript
+
+var port = Number(process.argv[3]);
+var Crossroad = require('../index');
+var crossroadd = new Crossroad({ port: port })
+crossroadd.start();
