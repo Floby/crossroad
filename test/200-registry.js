@@ -23,11 +23,14 @@ describe('a registry instance', function () {
   });
 
   describe('.add(service)', function () {
-    var service = {
-      type: 'some-type',
-      version: '3.2.1',
-      location: {}
-    }
+    var service;
+    beforeEach(function () {
+      service = {
+        type: 'some-type',
+        version: '3.2.1',
+        location: {}
+      }
+    })
     it('is a function', function () {
       expect(registry).to.have.property('add');
       expect(registry.add).to.be.a('function');
