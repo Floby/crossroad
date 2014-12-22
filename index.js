@@ -6,6 +6,7 @@ var express = require('express');
 var http = require('http');
 var EventEmitter = require('events').EventEmitter
 var version = require('./package').version;
+var Registry = require('./lib/registry');
 
 module.exports = Crossroad;
 
@@ -16,7 +17,7 @@ function Crossroad (options) {
 
   EventEmitter.call(this);
   var self = this;
-  self.registry = {};
+  self.registry = new Registry();
   options = options || {};
   this.port = options.port || 0;
   this.server = http.createServer(createApp(this))
@@ -53,21 +54,21 @@ function findService (registry) {
   return function (req, res, next) {
     var type = req.param('service_type');
     var spec = req.param('version_spec');
-    if(!registry[type]) return next();
-    if(!semver.satisfies(registry[type].version, spec)) return next();
-    res.json(registry[type]);
+    var service = registry.find(type, spec);
+    if(!service) return next();
+    res.json(service);
   };
 }
 
 function postService (registry, server) {
   return function (req, res, next) {
     var service = req.body;
-    registry[service.type] = service;
+    var removeService = registry.add(service);
     res.setHeader('Connection', 'close');
     res.status(201).write(' ');
     server.once('_close', clearOnClose);
     res.on('close', function() {
-      delete registry[service.type];
+      removeService();
     });
     function clearOnClose () {
       res.end();
