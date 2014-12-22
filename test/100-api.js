@@ -71,14 +71,6 @@ describe('a running instance', function () {
         });
       })
 
-      describe('with a valid service description', function () {
-        it('returns a 201', null, function (done) {
-          postService(validDescriptor)
-          .expect(201)
-          .end(done)
-        });
-      })
-
       describe('with the application/crossroad-session+json Accept header', function () {
         it('keeps the connection open', function (done) {
           var url = util.format('http://localhost:%d/services', crossroad.port);
