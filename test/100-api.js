@@ -150,6 +150,21 @@ describe('a running instance', function () {
             .end(done)
         });
       });
+
+      describe('and then drops its connection', function () {
+        beforeEach(function (done) {
+          serviceResponse.socket.destroy();
+          setTimeout(done, 10);
+        });
+        it('returns a 404 for that service', function (done) {
+          supertest()
+            .get('/services/my-service/~1.0.0')
+            .expect(404)
+            .expect('Content-Type', /application\/json/)
+            .expect({ status: 'not_found', reason: 'No service matches my-service@~1.0.0' })
+            .end(done)
+        });
+      });
     })
   });
 })

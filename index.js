@@ -5,8 +5,7 @@ var paperwork = require('paperwork');
 var express = require('express');
 var http = require('http');
 var EventEmitter = require('events').EventEmitter
-
-
+var version = require('./package').version;
 
 module.exports = Crossroad;
 
@@ -31,6 +30,11 @@ var newServiceTemplate = {
 
 function createApp (server) {
   var app = express();
+  app.disable('x-powered-by');
+  app.use(function (res, res, next) {
+    res.setHeader('Server', 'crossroad-v'+version);
+    next();
+  });
   app.get('/', sendInfo(server));
   app.get('/info', sendInfo(server));
   app.post('/services', 
@@ -59,12 +63,12 @@ function postService (registry, server) {
   return function (req, res, next) {
     var service = req.body;
     registry[service.type] = service;
+    res.setHeader('Connection', 'close');
     res.status(201).write(' ');
-    server.on('_close', clearOnClose);
-    //res.on('close', function(err, res) {
-      //server.removeListener('_close', clearOnClose)
-    //});
-
+    server.once('_close', clearOnClose);
+    res.on('close', function() {
+      delete registry[service.type];
+    });
     function clearOnClose () {
       res.end();
     }
