@@ -80,7 +80,7 @@ function sendInfo (server) {
   return function (req, res) {
     res.json({
       crossroad: {
-        version: '0.0.0',
+        version: version,
         port: server.port
       }
     })
