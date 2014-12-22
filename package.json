@@ -9,6 +9,7 @@
     "coveralls": "^2.11.2",
     "express": "^4.10.6",
     "istanbul": "^0.3.5",
+    "minimist": "^1.1.0",
     "paperwork": "^2.0.1",
     "semver": "^4.1.0",
     "supertest": "^0.15.0"
