@@ -45,12 +45,16 @@ Content-Type: application/json
   "location": {
     "host": "172.50.60.22",
     "port": 8080
-  },
-  "TTL": 10000
+  }
 }
 
 -> 201 Created
+-> (keeps connection indefinitely)
 ```
+
+The `crossroadd` server holds the connection for this request open as long as necessary.
+When the connection is broken, the service is considered to be down.
+
 
 ##### Client
 
