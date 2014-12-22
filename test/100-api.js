@@ -1,3 +1,7 @@
+var request = require('request');
+var expect = require('chai').expect
+var sinon = require('sinon');
+var util = require('util');
 var Crossroad = require('../index');
 
 describe('a running instance', function () {
@@ -68,12 +72,35 @@ describe('a running instance', function () {
       })
 
       describe('with a valid service description', function () {
-        it('returns a 201', function (done) {
+        it('returns a 201', null, function (done) {
           postService(validDescriptor)
           .expect(201)
           .end(done)
         });
       })
+
+      describe('with the application/crossroad-session+json Accept header', function () {
+        it('keeps the connection open', function (done) {
+          var url = util.format('http://localhost:%d/services', crossroad.port);
+          var req = request.post({
+            url: url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/crossroad-session+json'
+            },
+            json: validDescriptor
+          });
+          req.on('response', function(response) {
+            expect(response.statusCode).to.equal(201);
+            var onEnd = sinon.spy();
+            response.on('end', onEnd);
+            setTimeout(function () {
+              expect(onEnd.called).to.equal(false, 'onEnd called');
+              done();
+            }, 1000);
+          });
+        });
+      });
     });
   });
 
@@ -90,12 +117,17 @@ describe('a running instance', function () {
     });
 
     describe('when a service is registered', function () {
+      var serviceResponse;
       beforeEach(function (done) {
-        supertest().post('/services')
-                   .set('Content-Type', 'application/json')
-                   .send(validDescriptor)
-                   .expect(201)
-                   .end(done)
+        var url = util.format('http://localhost:%d/services', crossroad.port);
+        var headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/crossroad-session+json'
+        }
+        request.post({url: url, headers: headers, json: validDescriptor}).on('response', function(response) {
+          serviceResponse = response;
+          done();
+        });
       });
 
       describe('with a non matching version range', function () {

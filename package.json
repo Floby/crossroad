@@ -15,7 +15,9 @@
     "supertest": "^0.15.0"
   },
   "devDependencies": {
-    "mocha": "^2.0.1"
+    "mocha": "^2.0.1",
+    "request": "^2.51.0",
+    "sinon": "^1.12.2"
   },
   "scripts": {
     "test": "istanbul cover --print detail _mocha -- -R spec test",

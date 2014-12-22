@@ -4,12 +4,18 @@ var bodyParser = require('body-parser');
 var paperwork = require('paperwork');
 var express = require('express');
 var http = require('http');
+var EventEmitter = require('events').EventEmitter
+
+
 
 module.exports = Crossroad;
+
+util.inherits(Crossroad, EventEmitter);
 
 function Crossroad (options) {
   if(!(this instanceof Crossroad)) return new Crossroad(options);
 
+  EventEmitter.call(this);
   var self = this;
   self.registry = {};
   options = options || {};
@@ -30,7 +36,7 @@ function createApp (server) {
   app.post('/services', 
       bodyParser.json(),
       paperwork.accept(newServiceTemplate),
-      postService(server.registry))
+      postService(server.registry, server))
   
   app.get('/services/:service_type/:version_spec',
       findService(server.registry),
@@ -49,11 +55,19 @@ function findService (registry) {
   };
 }
 
-function postService (registry) {
+function postService (registry, server) {
   return function (req, res, next) {
     var service = req.body;
     registry[service.type] = service;
-    res.status(201).end()
+    res.status(201).write(' ');
+    server.on('_close', clearOnClose);
+    //res.on('close', function(err, res) {
+      //server.removeListener('_close', clearOnClose)
+    //});
+
+    function clearOnClose () {
+      res.end();
+    }
   }
 }
 
@@ -88,5 +102,6 @@ m.start = function start (callback) {
 }
 
 m.stop = function stop(callback) {
+  this.emit('_close');
   this.server.close(callback);
 }

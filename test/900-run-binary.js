@@ -8,7 +8,7 @@ describe('The crossroadd binary', function () {
     child = spawn(path.join(__dirname, '../bin/crossroadd'), ['--port', '5656'])
     setTimeout(done, 200)
   });
-  afterEach(function () {
+  afterEach(function (done) {
     child.kill()
     child.on('exit', function () {
       done();
