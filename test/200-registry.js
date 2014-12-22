@@ -77,5 +77,41 @@ describe('a registry instance', function () {
       });
     })
   })
+
+  describe('.createStream()', function () {
+    it('returns a duplex stream', function () {
+      var str = registry.createStream();
+      expect(str.readable).to.equal(true);
+      expect(str.writable).to.equal(true);
+    });
+  });
+
+  describe('.syncWith(duplexStream)', function () {
+    var service = {
+      type: 'my-service-type',
+      version: '1.2.3',
+      location: {}
+    }
+    it('synchronizes two registries', function (done) {
+      var reg1 = Registry();
+      var reg2 = Registry();
+      reg1.syncWith(reg2.createStream());
+
+      var remover = reg1.add(service);
+      setTimeout(function () {
+        expect(reg2.find('my-service-type', '^1.2.0')).to.deep.equal({
+          type: 'my-service-type',
+          version: '1.2.3',
+          location: {}
+        });
+
+        remover();
+        setTimeout(function () {
+          expect(reg2.find('my-service-type', '1.2.3')).to.equal(null);
+          done();
+        }, 2)
+      }, 2)
+    });
+  });
 });
 
